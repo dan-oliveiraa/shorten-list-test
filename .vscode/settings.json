@@ -1,0 +1,22 @@
+{
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": false,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit",
+        "source.organizeImports": "explicit"
+    },
+    "dart.flutterSdkPath": "",
+    "dart.lineLength": 100,
+    "dart.insertArgumentPlaceholders": false,
+    "dart.enableSdkFormatter": true,
+    "dart.previewFlutterUiGuides": true,
+    "dart.completeFunctionCalls": true,
+    "[dart]": {
+        "editor.defaultFormatter": "Dart-Code.dart-code"
+    },
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.autoSave": "off"
+}
