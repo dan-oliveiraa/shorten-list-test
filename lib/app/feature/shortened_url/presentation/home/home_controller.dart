@@ -43,7 +43,6 @@ class HomeController extends IHomeController {
         );
 
         final valueObject = _input;
-
         final result = await _shortenUrlUseCase.call(valueObject);
 
         return switch (result) {

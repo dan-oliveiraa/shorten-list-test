@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shorten_list_test/app/common/widgets/app_button.dart';
 
 class UrlButton extends StatelessWidget {
   final void Function()? shortenUrl;
@@ -9,20 +10,6 @@ class UrlButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.grey[300],
-      borderRadius: BorderRadius.circular(8),
-      child: InkWell(
-        onTap: shortenUrl,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.all(14),
-          child: const Icon(
-            Icons.arrow_forward,
-            color: Colors.black87,
-          ),
-        ),
-      ),
-    );
+    return AppButton(onTap: shortenUrl);
   }
 }
