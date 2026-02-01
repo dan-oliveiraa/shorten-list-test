@@ -48,14 +48,8 @@ The integration tests cover the following scenarios:
 ### On a Real Device or Emulator
 
 ```bash
-# Run all integration tests
-flutter test integration_test
-
 # Run specific test file
 flutter run -d windows integration_test/success_flow.dart
-
-# Run with verbose output
-flutter test integration_test --verbose
 ```
 
 ### On Chrome (Web)
@@ -65,16 +59,6 @@ flutter drive \
   --driver=test_driver/integration_test.dart \
   --target=integration_test/success_flow.dart \
   -d chrome
-```
-
-### On Specific Device
-
-```bash
-# List available devices
-flutter devices
-
-# Run on specific device
-flutter test integration_test -d <device-id>
 ```
 
 ## Test Structure
@@ -98,19 +82,6 @@ integration_test/
 - URL: `https://url-shortener-server.onrender.com/api/alias`
 - Method: POST
 - Requires internet connection
-
-⏱️ **Test Duration**: Integration tests may take several minutes to complete due to:
-- Real network requests
-- API response times
-- Multiple test scenarios
-
-🧪 **Test Philosophy**:
-- Tests real user flows
-- No mocking (full integration)
-- Validates actual API integration
-- Tests UI, business logic, and data layers together
-
-## Troubleshooting
 
 ### Tests Timeout
 If tests timeout, increase the timeout value:
@@ -154,7 +125,3 @@ As the application evolves:
 - Widget-level rendering (see `test/widget/` folder)
 - API mocking scenarios
 - Offline scenarios
-
-## Contact
-
-For questions about integration tests, refer to the main project documentation or contact the development team.
