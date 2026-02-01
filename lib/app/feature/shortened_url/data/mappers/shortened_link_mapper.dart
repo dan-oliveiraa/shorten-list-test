@@ -16,8 +16,8 @@ class ShortenedLinkMapper {
   factory ShortenedLinkMapper.fromMap(Map<String, dynamic> map) {
     return ShortenedLinkMapper(
       alias: map['alias'] ?? '',
-      link: map['link'] != null
-          ? LinkMapper.fromMap(map['link'] as Map<String, dynamic>)
+      link: map['_links'] != null
+          ? LinkMapper.fromMap(map['_links'] as Map<String, dynamic>)
           : LinkMapper(
               originalUrl: '',
               shortenedUrl: '',

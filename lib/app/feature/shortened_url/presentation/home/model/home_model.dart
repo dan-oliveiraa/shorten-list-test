@@ -1,11 +1,11 @@
-import 'package:shorten_list_test/app/common/base/base_model.dart';
 import 'package:shorten_list_test/app/feature/shortened_url/domain/entities/shortened_link_entity.dart';
+import 'package:shorten_list_test/app/feature/shortened_url/presentation/home/model/home_state.dart';
 
-class HomeViewModel extends BaseViewModel {
+class HomeViewModel {
   List<ShortenedLinkEntity> shortenedLinks;
+  HomeState state;
   HomeViewModel({
-    required super.state,
-    super.isLoading = false,
+    required this.state,
     this.shortenedLinks = const [],
   });
 }

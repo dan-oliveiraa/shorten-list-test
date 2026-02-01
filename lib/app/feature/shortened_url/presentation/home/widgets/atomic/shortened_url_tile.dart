@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ShortenedUrlTile extends StatelessWidget {
-  final String url;
-  const ShortenedUrlTile({required this.url, super.key});
+  final String alias;
+  const ShortenedUrlTile({required this.alias, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class ShortenedUrlTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        url,
+        alias,
         style: const TextStyle(
           fontSize: 14,
           color: Colors.black87,

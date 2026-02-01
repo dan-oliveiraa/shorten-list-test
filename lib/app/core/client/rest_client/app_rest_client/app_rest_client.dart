@@ -1,44 +1,47 @@
 import 'dart:convert';
 
+import 'package:shorten_list_test/app/core/client/dto/rest_object.dart';
 import 'package:shorten_list_test/app/core/client/response/rest_response.dart';
-import 'package:shorten_list_test/app/core/contracts/app_rest_client/app_resolve_interface.dart';
+import 'package:shorten_list_test/app/core/contracts/adapter/rest_adapter_interface.dart';
 import 'package:shorten_list_test/app/core/contracts/app_rest_client/app_rest_client_interface.dart';
 import 'package:shorten_list_test/app/core/contracts/helper/rest_client_helper_interface.dart';
-import 'package:shorten_list_test/app/core/contracts/rest_client/rest_body_content_interface.dart';
 import 'package:shorten_list_test/app/core/contracts/rest_client/rest_client_authorization_interface.dart';
-import 'package:shorten_list_test/app/core/contracts/rest_client/rest_client_interface.dart';
 import 'package:shorten_list_test/app/core/contracts/service/global_error_interface.dart';
 
 import '../../../utils/helper/data_structure/map_helper.dart';
 
 class AppRestClient implements IAppRestClient {
-  final IRestClient _client;
-  final IAppResolveUri _appResolve;
+  final IRestAdapter _adapter;
   final IRestClientHelper _helper;
   final IGlobalErrorService _errorService;
 
+  static const int _secondsTimeout = 20;
+
   AppRestClient(
-    this._client,
-    this._appResolve,
+    this._adapter,
     this._helper,
     this._errorService,
   );
 
   @override
   Future<RestResponse> sendDelete({
-    required String api,
     required String url,
     Map<String, String>? headers,
     IRestClientAuthorization? authorization,
   }) async {
     try {
-      final response = await _client.sendDelete(
-        url: api.isEmpty
-            ? url
-            : _appResolve.resolveUri(
-                api: api,
-                url: url,
-              ),
+      final response = await _adapter.delete(
+        url,
+        options: RestOptions(
+          sendTimeout: Duration(seconds: _secondsTimeout),
+          receiveTimeout: Duration(seconds: _secondsTimeout),
+          headers: MapHelper.mergeMaps(
+            [
+              (authorization != null ? {"Authorization": authorization.getValue()} : null),
+              headers,
+            ],
+          ),
+        ),
       );
 
       return _helper.clientResponseToRestResponse(response);
@@ -49,7 +52,6 @@ class AppRestClient implements IAppRestClient {
 
   @override
   Future<RestResponse> sendGet({
-    required String api,
     required String url,
     Map<String, String>? headers,
     IRestClientAuthorization? authorization,
@@ -57,21 +59,20 @@ class AppRestClient implements IAppRestClient {
     List<String>? xFields,
   }) async {
     try {
-      final response = await _client.sendGet(
-        headers: MapHelper.mergeMaps(
-          [
-            headers,
-            xFilter != null ? {'X-filter': Uri.encodeComponent(jsonEncode(xFilter))} : null,
-            xFields != null ? {'X-fields': xFields.join(',')} : null,
-          ],
+      final response = await _adapter.get(
+        url,
+        options: RestOptions(
+          sendTimeout: Duration(seconds: _secondsTimeout),
+          receiveTimeout: Duration(seconds: _secondsTimeout),
+          headers: MapHelper.mergeMaps(
+            [
+              headers,
+              (authorization != null ? {"Authorization": authorization.getValue()} : null),
+              xFilter != null ? {'X-filter': Uri.encodeComponent(jsonEncode(xFilter))} : null,
+              xFields != null ? {'X-fields': xFields.join(',')} : null,
+            ],
+          ),
         ),
-        url: api.isEmpty
-            ? url
-            : _appResolve.resolveUri(
-                api: api,
-                url: url,
-              ),
-        authorization: authorization,
       );
 
       return _helper.clientResponseToRestResponse(response);
@@ -82,18 +83,25 @@ class AppRestClient implements IAppRestClient {
 
   @override
   Future<RestResponse> sendPost({
-    required String api,
     required String url,
-    required IRestBodyContent body,
+    required Map<String, dynamic> body,
     Map<String, String>? headers,
     IRestClientAuthorization? authorization,
   }) async {
     try {
-      final response = await _client.sendPost(
-        url: url,
+      final response = await _adapter.post(
+        url,
         body: body,
-        headers: headers,
-        authorization: authorization,
+        options: RestOptions(
+          sendTimeout: Duration(seconds: _secondsTimeout),
+          receiveTimeout: Duration(seconds: _secondsTimeout),
+          headers: MapHelper.mergeMaps(
+            [
+              (authorization != null ? {"Authorization": authorization.getValue()} : null),
+              headers,
+            ],
+          ),
+        ),
       );
 
       return _helper.clientResponseToRestResponse(response);
@@ -104,18 +112,25 @@ class AppRestClient implements IAppRestClient {
 
   @override
   Future<RestResponse> sendPut({
-    required String api,
     required String url,
-    required IRestBodyContent body,
+    required Map<String, dynamic> body,
     Map<String, String>? headers,
     IRestClientAuthorization? authorization,
   }) async {
     try {
-      final response = await _client.sendPut(
-        url: url,
+      final response = await _adapter.put(
+        url,
         body: body,
-        headers: headers,
-        authorization: authorization,
+        options: RestOptions(
+          sendTimeout: Duration(seconds: _secondsTimeout),
+          receiveTimeout: Duration(seconds: _secondsTimeout),
+          headers: MapHelper.mergeMaps(
+            [
+              (authorization != null ? {"Authorization": authorization.getValue()} : null),
+              headers,
+            ],
+          ),
+        ),
       );
 
       return _helper.clientResponseToRestResponse(response);

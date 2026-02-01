@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shorten_list_test/app/common/states/app_states.dart';
 import 'package:shorten_list_test/app/feature/shortened_url/domain/contracts/controller/home_controller_interface.dart';
 import 'package:shorten_list_test/app/feature/shortened_url/presentation/home/model/home_model.dart';
+import 'package:shorten_list_test/app/feature/shortened_url/presentation/home/model/home_state.dart';
 import 'package:shorten_list_test/app/feature/shortened_url/presentation/home/widgets/template/home_url_template.dart';
 import 'package:shorten_list_test/app/feature/shortened_url/presentation/home/widgets/template/skeleton_home_url_template.dart';
 
@@ -27,34 +27,31 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: StreamBuilder<HomeViewModel>(
-          stream: widget.controller.onState.cast<HomeViewModel>(),
-          initialData: HomeViewModel(state: AppStates.isLoaded),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Center(
-                child: Text('Erro: ${snapshot.error}'),
-              );
-            }
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: StreamBuilder<HomeViewModel>(
+            stream: widget.controller.onState.cast<HomeViewModel>(),
+            initialData: HomeViewModel(state: const HomeLoaded()),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(child: Text('Erro: ${snapshot.error}'));
+              }
 
-            if (snapshot.hasData && snapshot.data!.isLoading) {
-              return Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: SkeletonHomeUrlTemplate(
-                  urlController: _urlController,
-                ),
-              );
-            }
+              final viewModel = snapshot.data;
+              final state = viewModel?.state ?? const HomeLoading();
 
-            return Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: HomeUrlTemplate(
-                urlController: _urlController,
-                shortenUrl: widget.controller.send,
-                recentUrls: widget.controller.recentUrls,
-              ),
-            );
-          },
+              return switch (state) {
+                HomeLoading() => SkeletonHomeUrlTemplate(urlController: _urlController),
+                HomeError(:final message) => Center(child: Text('Erro: $message')),
+                HomeLoaded() => HomeUrlTemplate(
+                    urlController: _urlController,
+                    shortenUrl: widget.controller.send,
+                    recentUrls: viewModel?.shortenedLinks ?? const [],
+                    input: widget.controller.input,
+                  ),
+              };
+            },
+          ),
         ),
       ),
     );

@@ -1,10 +1,8 @@
 import 'package:shorten_list_test/app/core/client/response/rest_response.dart';
-import 'package:shorten_list_test/app/core/contracts/rest_client/rest_body_content_interface.dart';
 import 'package:shorten_list_test/app/core/contracts/rest_client/rest_client_authorization_interface.dart';
 
 abstract class IAppRestClient {
   Future<RestResponse> sendGet({
-    required String api,
     required String url,
     Map<String, String>? headers,
     IRestClientAuthorization? authorization,
@@ -12,22 +10,19 @@ abstract class IAppRestClient {
     List<String>? xFields,
   });
   Future<RestResponse> sendDelete({
-    required String api,
     required String url,
     Map<String, String>? headers,
     IRestClientAuthorization? authorization,
   });
   Future<RestResponse> sendPost({
-    required String api,
     required String url,
-    required IRestBodyContent body,
+    required Map<String, dynamic> body,
     Map<String, String>? headers,
     IRestClientAuthorization? authorization,
   });
   Future<RestResponse> sendPut({
-    required String api,
     required String url,
-    required IRestBodyContent body,
+    required Map<String, dynamic> body,
     Map<String, String>? headers,
     IRestClientAuthorization? authorization,
   });

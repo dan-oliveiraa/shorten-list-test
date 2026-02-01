@@ -5,15 +5,20 @@ import 'package:shorten_list_test/app/feature/shortened_url/presentation/home/wi
 import 'package:shorten_list_test/app/feature/shortened_url/presentation/home/widgets/atomic/shortened_url_tile.dart';
 import 'package:shorten_list_test/app/feature/shortened_url/presentation/home/widgets/molecules/url_search.dart';
 
+import '../../../../domain/value_objects/shorten_url_input.dart';
+
 class HomeUrlTemplate extends StatelessWidget {
   final TextEditingController urlController;
   final void Function() shortenUrl;
   final List<ShortenedLinkEntity> recentUrls;
+  final ShortenUrlInput input;
+
   const HomeUrlTemplate({
     super.key,
     required this.urlController,
     required this.shortenUrl,
     required this.recentUrls,
+    required this.input,
   });
 
   @override
@@ -25,6 +30,7 @@ class HomeUrlTemplate extends StatelessWidget {
         UrlSearch(
           urlController: urlController,
           shortenUrl: shortenUrl,
+          input: input,
         ),
         const SizedBox(height: 40),
         AppText(
@@ -41,7 +47,7 @@ class HomeUrlTemplate extends StatelessWidget {
                   itemCount: recentUrls.length,
                   separatorBuilder: (context, index) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
-                    return ShortenedUrlTile(url: recentUrls[index].link.shortenedUrl);
+                    return ShortenedUrlTile(alias: recentUrls[index].alias);
                   },
                 ),
         ),
