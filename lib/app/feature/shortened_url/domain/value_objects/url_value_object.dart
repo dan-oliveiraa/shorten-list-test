@@ -20,14 +20,14 @@ class URL {
     }
 
     final validExtensions = ['.com', '.br', '.dev', '.gov'];
-    final hasValidExtension = validExtensions.any((ext) => url.endsWith(ext));
+    final hasValidExtension = validExtensions.any((ext) => url.contains(ext));
 
     if (!hasValidExtension) {
       return 'Invalid URL format.';
     }
 
     final urlPattern = RegExp(
-      r'^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$',
+      r'^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})(:[0-9]{1,5})?(\/[\w\-\.~:/?#\[\]@!$&()*+,;=%]*)?(#[\w\-\.~:/?#\[\]@!$&()*+,;=%]*)?$',
       caseSensitive: false,
     );
 
