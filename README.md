@@ -1,290 +1,260 @@
-# shorten_list_test
+# URL Shortener — Clean Architecture + Hexagonal
 
-A Flutter application for URL shortening with comprehensive unit testing.
+📌 **Goal**: Build a decoupled, scalable, testable, and maintainable solution without over‑engineering the challenge scope.
 
-## Test Coverage
+---
 
-**Total Tests: 202 (119 DOMAIN + 83 CORE/DATA)**
-- ✅ DOMAIN Layer: 119 tests (Value Objects + Entities)
-- ✅ CORE Layer: 41 tests (Infrastructure)
-- ✅ DATA Layer: 42 tests (Data Mapping & Integration)
-- 🎯 Quality Focus: Importance > Coverage
+## 📐 Solution Overview
 
-### Coverage Breakdown
+This project was designed with architectural clarity and intentional technical decisions. The approach focuses on:
 
-#### ✅ DOMAIN Layer - Value Objects (81 tests)
-- `URL` - URL validation with custom rules (36 tests)
-  - Extension validation (.com, .br, .dev, .gov)
-  - Protocol support (http, https, none)
-  - Path, query, fragment validation
-  - Special characters, unicode, edge cases
-  - Equality, hashCode, mutability
-- `ShortenUrlInput` - URL input with optional UUID (45 tests)
-  - Composition with URL value object
-  - Factory constructors (empty, with/without UUID)
-  - Equality and hashCode for collections
-  - Property mutation and state changes
-  - Edge cases (long URLs, special chars, unicode)
+- **Decoupled layers** with clear responsibilities
+- **Framework independence** for core logic
+- **Testability** as a first‑class concern
+- **Scalability** without unnecessary complexity
 
-#### ✅ DOMAIN Layer - Entities (38 tests)
-- `LinkEntity` - Original and shortened URL pair (19 tests)
-  - isEmpty logic (AND condition on both URLs)
-  - URL format variations (protocols, ports, subdomains)
-  - Special characters and unicode support
-  - Whitespace handling edge cases
-- `ShortenedLinkEntity` - Link with alias (19 tests)
-  - isEmpty logic (alias AND link.isEmpty)
-  - Alias format variations (alphanumeric, hyphens, underscores)
-  - Composition with LinkEntity
-  - Complex real-world scenarios (metadata-rich URLs, international domains)
+---
 
-#### ✅ CORE Layer - HTTP Client & Adapters (19 tests)
-- `HttpRestAdapter` - HTTP operations (GET, POST, PUT, DELETE)
-- `AppRestClient` - REST client with header merging, authorization, error handling
-- `AdapterHelper` - Request/response transformation, JSON encoding/decoding
-- `RestClientHelper` - Response conversion, exception mapping
+## 🧠 Thought Process
 
-#### ✅ CORE Layer - Error Handling & Services (17 tests)
-- `GlobalErrorService` - Exception mapping to domain errors
-- `SafeExecutor` - Exception guarding with error callbacks
-- `RestResponse` - Status code validation, authorization checks
+### 1) Understanding the Challenge
 
-#### ✅ CORE Layer - Utilities & Helpers (5 tests)
-- `StreamEmitter` - State management streams (1 test)
-- `MapHelper` - Map merging utilities (2 tests)
-- `ListHelper` - List operations (2 tests)
+Before writing code, the focus was to **fully understand the problem** and expected behaviors.
+Only after the requirements were clear did the implementation begin.
 
-#### ✅ DATA Layer - API Datasource Integration (9 tests)
-- `UrlDatasource` - HTTP API calls, JSON decoding, response validation
-- Tests: success responses, missing fields, malformed JSON, error handling
+### 2) Technical Planning
 
-#### ✅ DATA Layer - Repository Orchestration (2 tests)
-- `UrlRepository` - Datasource → Entity conversion
-- Tests: happy path, error propagation
+**URL Validation**
+- Should it be strict or flexible?
+- What formats should be accepted?
 
-#### ✅ DATA Layer - Entity Mapping (18 tests)
-- `ShortenedLinkMapper` - JSON parsing, nested structure handling, entity conversion (10 tests)
-- `LinkMapper` - URL mapping with fallbacks, isEmpty logic (8 tests)
-- Tests: valid/invalid maps, null handling, special characters, empty values
+✅ **Decision**: Validate essential correctness only, keeping it flexible for future changes.
 
-## What Is Being Tested?
+**Data Duplication**
+- Should duplicate URLs be blocked?
 
-### Critical Business Logic
-- **API Integration** - HTTP calls to external URL shortening service
-- **JSON Parsing** - Decoding API responses with nested structures
-- **Status code handling** - Different HTTP status codes trigger correct exceptions
-- **Error transformation** - Network/platform exceptions map to domain-specific errors
-- **Authorization flow** - Header injection, empty token handling
-- **Request/response lifecycle** - JSON encoding, header setting, body writing
-- **Data mapping** - API response → Domain entity conversion with fallbacks
+✅ **Decision**: No duplication rule for now (no explicit requirement). The architecture allows adding this later.
 
-### Edge Cases
-- Empty/null bodies in requests and responses
-- Malformed JSON responses
-- Missing fields in nested JSON structures
-- Empty authorization tokens
-- Special character encoding in filters and URLs
-- Network failures and timeouts
-- Empty redirect lists
-- Stream closure after errors
-- Query parameters and URL fragments
+**Architecture**
+Considered: Clean, Hexagonal, MVVM, BLoC, ChangeNotifier, RxDart + Streams.
 
-### Integration Points
-- Adapter → Helper → Client flow (CORE)
-- Exception → ErrorService → Domain mapping (CORE)
-- Datasource → Repository → Entity flow (DATA)
-- JSON Parser → Mapper → Entity conversion (DATA)
-- Value Object validation → Entity creation (DOMAIN)
-- URL validation → Input validation → Use Case execution (DOMAIN → APPLICATION)
+✅ **Decision**: **Clean Architecture + Hexagonal thinking**, using RxDart for state streams.
 
-## What Do DOMAIN Tests Tell About the Project?
+### 3) Presentation Layer (VIEW)
 
-### ✅ **Strong Domain Modeling**
-1. **Custom URL Validation** - Not using standard validators
-   - Whitelist of extensions (.com, .br, .dev, .gov)
-   - Supports paths, queries, fragments, ports
-   - 36 tests ensure validation is bulletproof
+**RxDart + Streams** with explicit controller state:
+- Low coupling with UI
+- Easy to test
+- Scales well
 
-2. **Value Objects Follow DDD** - Immutable-like with validation
-   - URL and ShortenUrlInput are proper value objects
-   - Equality based on value, not identity
-   - Used in collections (Set, Map) via hashCode
+### 4) System Design
 
-3. **Business Rules in Entities** - Not just data holders
-   - `isEmpty` logic enforces "both empty" rule
-   - LinkEntity and ShortenedLinkEntity have clear semantics
-   - 38 tests validate business invariants
+**Atomic Design** for UI components:
+- Atoms → Molecules → Templates
+- High reuse and consistency
 
-4. **Mutability by Design** - Intentional for UI binding
-   - URL.value can be changed (supports TextEditingController)
-   - ShortenUrlInput.url can be updated (form validation)
-   - Tests verify mutation affects computed properties
+### 5) Infrastructure & HTTP
 
-### ✅ **Quality Indicators**
-- **119 tests for 4 small classes** = Deep validation
-- **Edge cases tested** - Unicode, whitespace, special chars, long values
-- **Real-world scenarios** - International domains, localhost, complex URLs
-- **No framework testing** - All tests validate business logic
+✅ **Decision**: Keep HTTP integration simple for single API usage.
 
-## Are All Tests Important?
+Even with simplified infra:
+- New APIs can be added easily
+- A more generic REST layer can be introduced later
 
-### ✅ **YES - All 202 Tests Are Critical**
+---
 
-**Why These Tests Matter:**
-
-1. **DOMAIN - Value Objects (81 tests)** - Business rules enforcement
-   - `URL` (36 tests) - Custom validation prevents invalid data at domain boundaries
-   - `ShortenUrlInput` (45 tests) - Composition and equality ensure correct behavior in collections
-   - Protects against: Invalid URLs entering system, broken equality in Sets/Maps, mutation bugs
-
-2. **DOMAIN - Entities (38 tests)** - Core business logic
-   - `LinkEntity` (19 tests) - isEmpty logic prevents empty entities in lists
-   - `ShortenedLinkEntity` (19 tests) - Alias + link composition validated
-   - Protects against: Logic errors in entity state, broken composition, whitespace bugs
-
-3. **CORE - Error Handling (17 tests)** - Prevents crashes, ensures graceful degradation
-   - `GlobalErrorService` - Core error strategy used throughout app
-   - `SafeExecutor` - Guards every async operation
-   - `RestResponse.ensureSuccess` - Validates all HTTP responses
-
-4. **CORE - HTTP Operations (19 tests)** - Foundation of all network communication
-   - `HttpRestAdapter` - Low-level HTTP, easy to break
-   - `AppRestClient` - Integration point for all API calls
-   - Header merging, authorization, filter encoding - error-prone logic
-
-5. **CORE - Utilities (5 tests)** - Reusable components used everywhere
-   - `StreamEmitter` - State management foundation (1 comprehensive test)
-   - `MapHelper` - Prevents header/parameter conflicts (2 tests)
-   - `ListHelper` - List operations (2 tests)
-
-6. **DATA - API Datasource (9 tests)** - External service integration
-   - Tests malformed responses, missing fields, error scenarios
-   - Critical for URL shortening feature reliability
-
-7. **DATA - Data Mapping (31 tests)** - API → Domain transformation
-   - Handles nested JSON structures and fallbacks
-   - Prevents mapping errors that cause entity creation to fail
-   - Tests edge cases like null values and missing nested objects
-
-8. **DATA - Repository (2 tests)** - Orchestration between layers
-   - Validates datasource → entity conversion
-   - Error propagation from datasource to use cases
-
-**What Makes a Test Important:**
-- ✅ Tests business rules and validation logic (DOMAIN)
-- ✅ Tests error conditions (not just happy path)
-- ✅ Validates integration between components
-- ✅ Covers edge cases that could cause runtime failures
-- ✅ Tests logic that's difficult to debug in production
-- ✅ Tests external service integration (API, JSON parsing)
-
-### ❌ **REMOVED: 35 Low-Value Tests (from 100 to 83)**
-
-**Deletion Strategy:**
-
-**LinkMapper: 14 → 4 tests (-10)** ❌
-- Consolidated: 6 individual null/missing field tests → 1 comprehensive test
-- Kept: Valid map parsing, fallback handling, extra field robustness
-- Why: Testing Dart's null coalescing operator `??`, not LinkMapper logic
-
-**UrlRepository: 5 → 2 tests (-3)** ❌
-- Deleted: Empty alias, complex URL scenarios
-- Kept: Happy path conversion, error propagation
-- Why: Pass-through repository already covered by datasource tests
-
-**ShortenedLinkMapper: 19 → 10 tests (-9)** ⚠️
-- Consolidated: Missing/null alias handling → 1 test
-- Consolidated: Missing/null _links handling → 1 test
-- Kept: All isEmpty property tests, all toEntity conversion tests
-- Why: Redundant null-handling scenarios
-
-**StreamEmitter: 3 → 1 test (-2)** ❌
-- Deleted: "multiple values in sequence", "closes after error"
-- Kept: "emits values, errors, and closes correctly"
-- Why: Testing RxDart behavior, not StreamEmitter implementation
-
-**MapHelper: 3 → 2 tests (-1)** ❌
-- Deleted: "overrides duplicate keys" (already in merge test)
-- Kept: "merges maps", "handles all nulls"
-- Why: Redundant behavior already covered
-
-## Test Quality Principles
-
-### What We Follow:
-- **Minimal mocking** - Use concrete instances over Fakes when possible
-- **Behavior over data** - Test what code does, not what it stores
-- **Edge cases first** - Prioritize failure scenarios over happy paths
-- **Clear intent** - Test names describe the scenario and expected outcome
-- **Critical logic priority** - Focus on components that handle data transformation and external integration
-
-### What We Avoid:
-- **Over-mocking** - Excessive mocks that test the mock framework
-- **Fake overuse** - Only use Fakes for abstract classes
-- **Testing getters/setters** - No value in testing language features
-- **Redundant tests** - Don't test what the compiler guarantees
-- **Testing DTOs** - Simple data classes without logic
-
-## Running Tests
-
-```bash
-```bash
-flutter test
-flutter test --coverage
-flutter test test/unit/
-flutter test test/unit/app/core/
-flutter test test/unit/app/feature/shortened_url/data/
-flutter test test/unit/app/feature/shortened_url/domain/
-flutter analyze
-```
-
-## Test Structure
+## 🧱 Architecture Overview
 
 ```
+┌──────────────────────────────┐
+│        PRESENTATION          │
+│  Widgets + Controllers + UI  │
+└──────────────▲───────────────┘
+							 │ Streams
+┌──────────────┴───────────────┐
+│          APPLICATION         │
+│         Use Cases            │
+└──────────────▲───────────────┘
+							 │ Ports
+┌──────────────┴───────────────┐
+│            DOMAIN            │
+│ Entities + Value Objects     │
+└──────────────▲───────────────┘
+							 │ Adapters
+┌──────────────┴───────────────┐
+│             DATA             │
+│ Repos + Datasources + Mappers│
+└──────────────────────────────┘
+```
+
+---
+
+## 🗂️ Project Structure (Simplified)
+
+```
+lib/
+├── app/
+│   ├── core/
+│   ├── common/
+│   └── feature/
+│       └── shortened_url/
+│           ├── data/
+│           ├── domain/
+│           ├── application/
+│           └── presentation/
+├── app_module.dart
+└── main.dart
+
 test/
-└── unit/
-    └── app/
-        ├── core/                          (41 tests)
-        │   ├── client/
-        │   │   ├── adapters/
-        │   │   ├── response/
-        │   │   └── rest_client/
-        │   ├── service/
-        │   └── utils/
-        │       └── helper/
-        └── feature/shortened_url/
-            ├── data/                      (42 tests)
-            │   ├── datasource/
-            │   ├── mappers/
-            │   └── repositories/
-            └── domain/                    (119 tests)
-                ├── entities/
-                └── value_objects/
+├── unit/
+└── widget/
+
+integration_test/
+└── success_flow.dart
 ```
 
-All unit tests follow the same structure as the source code for easy navigation.
+---
 
-### Test Statistics (Complete Suite)
+## 🧪 Testing Strategy
 
-| Layer | Component | Tests | Focus |
-|-------|-----------|-------|-------|
-| **DOMAIN** | **Value Objects** | **81** | **Business Rules & Validation** |
-| DOMAIN | URL Value Object | 36 | Extension validation, protocols, paths, queries |
-| DOMAIN | ShortenUrlInput | 45 | Composition, equality, mutation, edge cases |
-| **DOMAIN** | **Entities** | **38** | **Domain Models & Logic** |
-| DOMAIN | LinkEntity | 19 | isEmpty logic, URL formats, special characters |
-| DOMAIN | ShortenedLinkEntity | 19 | Alias handling, composition, real-world scenarios |
-| **CORE** | **Infrastructure** | **41** | **Foundation Services** |
-| CORE | HTTP Client & Adapters | 19 | Status codes, header handling |
-| CORE | Error Handling | 17 | Exception transformation, guards |
-| CORE | Utilities | 5 | Stream/map/list helpers |
-| **DATA** | **Integration & Mapping** | **42** | **External Services** |
-| DATA | API Datasource | 9 | JSON parsing, API integration |
-| DATA | Repository | 2 | Mapper conversion, error handling |
-| DATA | Entity Mappers | 31 | JSON parsing, fallback handling |
-| **TOTAL** | **4 layers, 9 components** | **202** | **Domain + Infrastructure + Data** |
+**Priority Over Coverage**
 
-✅ **Test Quality:**
-- **DOMAIN (119 tests)**: Value objects validated with 17+ assertions each
-- **CORE (41 tests)**: All critical infrastructure covered
-- **DATA (42 tests)**: Complete API integration & mapping
-- **0 Redundant Tests**: Every test validates important behavior
+Focus on **high‑value tests**:
+- Error scenarios
+- Invalid inputs
+- Critical behaviors
+
+### ✅ Unit & Widget Tests
+Run all unit and widget tests:
+
+```
+flutter test
+```
+
+### ✅ Integration Tests
+Run end‑to‑end tests (real API calls):
+
+```
+flutter drive --driver=test_driver/integration_test_driver.dart --target=integration_test/success_flow.dart -d windows
+```
+
+---
+
+## 🔌 Real API Used
+
+```
+POST https://url-shortener-server.onrender.com/api/alias
+```
+
+---
+
+## ✅ Example: Presentation Flow
+
+**Controller emits state changes:**
+
+```dart
+await _safeExecutor.guard(
+	() async {
+		emitter.emit(HomeViewModel(state: HomeLoading()));
+		final result = await _shortenUrlUseCase.call(_input);
+		return switch (result) {
+			Success(:final data) => _feedViewModel(data),
+			Failure(:final error) => emitter.emitError(error),
+		};
+	},
+);
+```
+
+---
+
+## ✅ Example: URL Input Validation
+
+```dart
+return AppInput(
+	onSaved: (value) {
+		if (value != null) {
+			input?.url = URL(value);
+		}
+	},
+	validator: (value) => URL.validate(value ?? ''),
+	inputController: urlController,
+	hintText: 'Type URL here',
+);
+```
+
+---
+
+## ✅ Example: Use Case
+
+```dart
+final resp = await _port.shortenUrl(input);
+
+if (resp.isEmpty) {
+	return Failure('Valores inválidos. Não adicionar na lista');
+}
+
+return Success(resp);
+```
+
+---
+
+## ✅ Example: UI List Rendering
+
+```dart
+Expanded(
+	child: recentUrls.isEmpty
+			? const EmptyUrl()
+			: ListView.separated(
+					itemCount: recentUrls.length,
+					separatorBuilder: (context, index) => const SizedBox(height: 12),
+					itemBuilder: (context, index) {
+						return ShortenedUrlTile(alias: recentUrls[index].alias);
+					},
+				),
+),
+```
+
+---
+
+## ✅ Integration Test Scenario (Success Flow)
+
+```
+1. Input a valid URL
+2. Tap the submit button
+3. API is called
+4. Result appears in the list
+```
+
+---
+
+## ✅ Key Decisions Summary
+
+| Area | Decision |
+|------|----------|
+| Validation | Flexible, essential correctness |
+| Duplicates | Not enforced (no explicit requirement) |
+| Architecture | Clean + Hexagonal |
+| State Mgmt | RxDart + Streams |
+| UI System | Atomic Design |
+| HTTP | Simple client, no over‑engineering |
+| Testing | Priority over coverage |
+
+---
+
+## ✅ How to Run
+
+```
+flutter pub get
+flutter test
+flutter drive --driver=test_driver/integration_test_driver.dart --target=integration_test/success_flow.dart -d windows
+```
+
+---
+
+## ✅ Notes
+
+- Integration tests use **real API calls**.
+- A stable internet connection is required.
+- The architecture supports future expansion with minimal refactoring.
+
+---
