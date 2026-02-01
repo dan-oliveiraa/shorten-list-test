@@ -56,6 +56,13 @@ class HomeController extends IHomeController {
     );
   }
 
+  @override
+  void dispose() {
+    _streamController.close();
+    emitter.close();
+    super.dispose();
+  }
+
   void _feedViewModel(ShortenedLinkEntity data) {
     _recentUrls.add(data);
     emitter.emit(

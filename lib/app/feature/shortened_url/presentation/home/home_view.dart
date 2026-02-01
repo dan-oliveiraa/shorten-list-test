@@ -18,6 +18,7 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   void dispose() {
+    widget.controller.dispose();
     _urlController.dispose();
     super.dispose();
   }
