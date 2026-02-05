@@ -65,27 +65,13 @@ Even with simplified infra:
 
 ## 🧱 Architecture Overview
 
-```
-┌──────────────────────────────┐
-│        PRESENTATION          │
-│  Widgets + Controllers + UI  │
-└──────────────▲───────────────┘
-							 │ Streams
-┌──────────────┴───────────────┐
-│          APPLICATION         │
-│         Use Cases            │
-└──────────────▲───────────────┘
-							 │ Ports
-┌──────────────┴───────────────┐
-│            DOMAIN            │
-│ Entities + Value Objects     │
-└──────────────▲───────────────┘
-							 │ Adapters
-┌──────────────┴───────────────┐
-│             DATA             │
-│ Repos + Datasources + Mappers│
-└──────────────────────────────┘
-```
+<img width="1238" height="286" alt="image" src="https://github.com/user-attachments/assets/0160a5d6-24ba-4aed-89e0-4b95132b6b3a" />
+<img width="1239" height="287" alt="image" src="https://github.com/user-attachments/assets/59402f06-0489-4169-a620-85a767089539" />
+<img width="1238" height="288" alt="image" src="https://github.com/user-attachments/assets/f3e5414e-61a4-47ec-a381-bff2858730ec" />
+<img width="1238" height="368" alt="image" src="https://github.com/user-attachments/assets/16f9208f-c566-4c44-ac14-f7f525965896" />
+
+<img width="1018" height="742" alt="image" src="https://github.com/user-attachments/assets/ee1e4ea6-9c4a-40e2-a8fa-a46b0a091b34" />
+<img width="1037" height="792" alt="image" src="https://github.com/user-attachments/assets/1dd44d93-48f2-40be-aacb-fd0d2f316a5e" />
 
 ---
 
