@@ -2,18 +2,15 @@ import 'url_value_object.dart';
 
 class ShortenUrlInput {
   URL url;
-  final String? uuid;
 
   ShortenUrlInput._({
     required this.url,
-    this.uuid,
   });
 
   factory ShortenUrlInput({
     required URL url,
-    String? uuid,
   }) {
-    return ShortenUrlInput._(url: url, uuid: uuid);
+    return ShortenUrlInput._(url: url);
   }
 
   factory ShortenUrlInput.empty() {
@@ -24,12 +21,12 @@ class ShortenUrlInput {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is ShortenUrlInput && other.url == url && other.uuid == uuid;
+    return other is ShortenUrlInput && other.url == url;
   }
 
   @override
-  int get hashCode => url.hashCode ^ uuid.hashCode;
+  int get hashCode => url.hashCode;
 
   @override
-  String toString() => 'ShortenUrlInput(url: $url, uuid: $uuid)';
+  String toString() => 'ShortenUrlInput(url: $url)';
 }

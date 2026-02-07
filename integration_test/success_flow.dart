@@ -1,34 +1,44 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:shorten_list_test/app/feature/shortened_url/domain/contracts/controller/home_controller_interface.dart';
-import 'package:shorten_list_test/app/feature/shortened_url/presentation/home/home_view.dart';
+import 'package:shorten_list_test/app/router/app_router.dart';
 import 'package:shorten_list_test/app_module.dart';
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('URL Shortener Success Flow Integration Test', () {
     setUpAll(() async {
-      AppModule().configure();
+      AppDI().configure();
     });
 
     setUp(() async {
       await GetIt.instance.reset();
-      AppModule().configure();
+      AppDI().configure();
     });
 
     tearDown(() async {
       await GetIt.instance.reset();
     });
 
+    tearDownAll(() {
+      binding.reportData = <String, dynamic>{};
+      SystemNavigator.pop();
+      if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+        exit(0);
+      }
+    });
+
     testWidgets(
       'Complete flow: Input valid URL -> Click button -> API call -> Display in list',
       (WidgetTester tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: HomeView(GetIt.instance<IHomeController>()),
+          MaterialApp.router(
+            routerConfig: AppRouter.router,
           ),
         );
 
@@ -88,8 +98,8 @@ void main() {
       'Multiple URLs flow: Submit multiple valid URLs and verify all appear in list',
       (WidgetTester tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: HomeView(GetIt.instance<IHomeController>()),
+          MaterialApp.router(
+            routerConfig: AppRouter.router,
           ),
         );
 
@@ -142,8 +152,8 @@ void main() {
       'UI Components: Verify all elements are present and functional',
       (WidgetTester tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: HomeView(GetIt.instance<IHomeController>()),
+          MaterialApp.router(
+            routerConfig: AppRouter.router,
           ),
         );
 
@@ -169,8 +179,8 @@ void main() {
       'Form validation: Empty URL should not submit',
       (WidgetTester tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: HomeView(GetIt.instance<IHomeController>()),
+          MaterialApp.router(
+            routerConfig: AppRouter.router,
           ),
         );
 
@@ -190,8 +200,8 @@ void main() {
       'Form validation: Invalid URL format should show error',
       (WidgetTester tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: HomeView(GetIt.instance<IHomeController>()),
+          MaterialApp.router(
+            routerConfig: AppRouter.router,
           ),
         );
 
@@ -215,8 +225,8 @@ void main() {
       'Persistence test: URLs added remain in the list',
       (WidgetTester tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: HomeView(GetIt.instance<IHomeController>()),
+          MaterialApp.router(
+            routerConfig: AppRouter.router,
           ),
         );
 
@@ -272,8 +282,8 @@ void main() {
       'Loading state verification: Skeleton appears during API call',
       (WidgetTester tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: HomeView(GetIt.instance<IHomeController>()),
+          MaterialApp.router(
+            routerConfig: AppRouter.router,
           ),
         );
 

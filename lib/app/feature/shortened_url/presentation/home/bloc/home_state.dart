@@ -5,12 +5,13 @@ sealed class HomeState {
 }
 
 final class HomeLoading extends HomeState {
-  const HomeLoading();
+  String? message;
+  HomeLoading({this.message});
 }
 
 final class HomeLoaded extends HomeState {
   final List<ShortenedLinkEntity> recentUrls;
-  const HomeLoaded({this.recentUrls = const []});
+  HomeLoaded({this.recentUrls = const []});
 }
 
 final class HomeError extends HomeState {

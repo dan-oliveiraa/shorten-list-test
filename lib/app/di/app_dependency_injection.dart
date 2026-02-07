@@ -3,7 +3,7 @@ import 'package:shorten_list_test/app/feature/shortened_url/application/applicat
 import 'package:shorten_list_test/app/feature/shortened_url/data/data_modules.dart';
 import 'package:shorten_list_test/app/feature/shortened_url/presentation/presentation_dependency_injection.dart';
 
-class AppDI {
+class AppDependencyInjection {
   void configure() {
     CoreModules().configure();
     DataModules().configure();

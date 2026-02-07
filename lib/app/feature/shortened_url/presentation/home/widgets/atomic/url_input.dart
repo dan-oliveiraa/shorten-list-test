@@ -17,6 +17,7 @@ class UrlInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppInput(
+      onChanged: (value) => input?.url = URL(value),
       onSaved: (value) {
         if (value != null) {
           input?.url = URL(value);

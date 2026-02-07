@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:shorten_list_test/app/feature/shortened_url/domain/contracts/controller/home_controller_interface.dart';
-import 'package:shorten_list_test/app/feature/shortened_url/presentation/home/model/home_model.dart';
-import 'package:shorten_list_test/app/feature/shortened_url/presentation/home/model/home_state.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shorten_list_test/app/common/widgets/error/error_view.dart';
+import 'package:shorten_list_test/app/feature/shortened_url/presentation/home/bloc/home_bloc.dart';
+import 'package:shorten_list_test/app/feature/shortened_url/presentation/home/bloc/home_event.dart';
+import 'package:shorten_list_test/app/feature/shortened_url/presentation/home/bloc/home_state.dart';
 import 'package:shorten_list_test/app/feature/shortened_url/presentation/home/widgets/template/home_url_template.dart';
 import 'package:shorten_list_test/app/feature/shortened_url/presentation/home/widgets/template/skeleton_home_url_template.dart';
 
 class HomeView extends StatefulWidget {
-  final IHomeController controller;
-  const HomeView(this.controller, {super.key});
+  const HomeView({super.key});
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -18,7 +19,6 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   void dispose() {
-    widget.controller.dispose();
     _urlController.dispose();
     super.dispose();
   }
@@ -30,25 +30,19 @@ class _HomeViewState extends State<HomeView> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: StreamBuilder<HomeViewModel>(
-            stream: widget.controller.onState.cast<HomeViewModel>(),
-            initialData: HomeViewModel(state: const HomeLoaded()),
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return Center(child: Text('Erro: ${snapshot.error}'));
-              }
-
-              final viewModel = snapshot.data;
-              final state = viewModel?.state ?? const HomeLoading();
-
+          child: BlocBuilder<HomeBloc, HomeState>(
+            builder: (context, state) {
               return switch (state) {
                 HomeLoading() => SkeletonHomeUrlTemplate(urlController: _urlController),
-                HomeError(:final message) => Center(child: Text('Erro: $message')),
-                HomeLoaded() => HomeUrlTemplate(
+                HomeError(:final message) => ErrorView(
+                    onPressed: () => context.read<HomeBloc>().add(HomeRefreshEvent()),
+                    message: message,
+                  ),
+                HomeLoaded(:final recentUrls) => HomeUrlTemplate(
                     urlController: _urlController,
-                    shortenUrl: widget.controller.send,
-                    recentUrls: viewModel?.shortenedLinks ?? const [],
-                    input: widget.controller.input,
+                    shortenUrl: () => context.read<HomeBloc>().add(HomeSendEvent()),
+                    recentUrls: recentUrls,
+                    input: context.read<HomeBloc>().input,
                   ),
               };
             },

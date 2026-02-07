@@ -4,11 +4,13 @@ class AppInput extends StatelessWidget {
   final TextEditingController inputController;
   final String hintText;
   final void Function(String?)? onSaved;
+  final void Function(String)? onChanged;
   final String? Function(String?)? validator;
   const AppInput({
     required this.inputController,
     required this.hintText,
     this.onSaved,
+    this.onChanged,
     this.validator,
     super.key,
   });
@@ -17,6 +19,7 @@ class AppInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       onSaved: onSaved,
+      onChanged: onChanged,
       validator: validator,
       controller: inputController,
       decoration: InputDecoration(
